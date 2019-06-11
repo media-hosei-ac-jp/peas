@@ -1,0 +1,23 @@
+<h3>結果一覧</h3>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>
+        タイトル
+      </th>
+      <th>
+        評価日時
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let info of resultInfo;">
+      <td>
+        <a routerLink="/result/{{info.targetId}}">{{info.title}}</a>
+      </td>
+      <td>
+        {{info.reviewStarted | date:'y/M/d hh:mm:ss' }}
+      </td>
+    </tr>
+  </tbody>
+</table>

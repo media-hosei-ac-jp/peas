@@ -1,0 +1,91 @@
+<div *ngIf="target && result">
+  <!-- TODO fix -->
+  <!-- ja -->
+<h3>{{result.title}} {{result.displayName}} 評価結果  <span class="badge badge-default">結果:{{target.resultPublished?'公開中':'非公開'}}</span></h3>
+<!-- e
+<h3>{{result.title}} {{result.displayName}} Result</h3>
+-->
+<div *ngIf="user && hasRole(user, 'Instructor')" class="float-right">
+  <button [hidden]="target.resultPublished" [disabled]="loading" (click)="setResultPublished(true)" class="btn btn-info">結果を公開する</button>
+  <button [hidden]="!target.resultPublished" [disabled]="loading"  (click)="setResultPublished(false)" class="btn btn-danger">結果を非公開にする</button>
+</div>
+
+<div style="height: 300px">
+<ngx-charts-line-chart
+  [view]="view"
+  [scheme]="colorScheme"
+  [results]="multi"
+  [gradient]="gradient"
+  [xAxis]="showXAxis"
+  [yAxis]="showYAxis"
+  [legend]="showLegend"
+  [showXAxisLabel]="showXAxisLabel"
+  [showYAxisLabel]="showYAxisLabel"
+  [xAxisLabel]="xAxisLabel"
+  [yAxisLabel]="yAxisLabel"
+  [autoScale]="autoScale"
+  [yScaleMin]="yScaleMin"
+  [yScaleMax]="yScaleMax"
+  >
+</ngx-charts-line-chart>
+</div>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>
+      <!-- ja -->
+      問題
+    <!-- en
+      question
+    -->
+      </th>
+      <th>
+        <!-- ja-->
+        評価の平均点
+      <!-- e
+      average
+    -->
+      </th>
+      <!--
+      <th>
+        クラスの平均点
+      </th>
+    -->
+    </tr>
+  </thead>
+  <tbody>
+    <tr [hidden]="item.quizItem.type!='Score'" *ngFor="let item of result.items; let i = index">
+      <td>
+        Q{{i+1}}. {{item.quizItem.text}}
+      </td>
+      <td>
+        {{item.averageScore/100}} / {{item.quizItem.maxScore}}
+      </td>
+      <!--
+      <td>
+        0.5
+      </td>
+    -->
+    </tr>
+  </tbody>
+</table>
+<div [hidden]="item.quizItem.type!='Free'" *ngFor="let item of result.items; let i = index">
+Q{{i+1}}. {{item.quizItem.text}} <span *ngIf="item.comments" class="badge badge-default">{{item.count}}</span>
+<ul>
+  <li [hidden]="!comment.content"*ngFor="let comment of item.comments">
+    <span [hidden]="!user || !hasRole(user, 'Instructor')">
+      <button [disabled]="sending" [hidden]="comment.hidden" (click)="setHidden(comment, true)" class="btn btn-sm btn-danger">非表示にする</button>
+      <button [disabled]="sending" [hidden]="!comment.hidden" (click)="setHidden(comment, false)" class="btn btn-sm btn-info">表示する</button>
+    </span>
+    <span *ngIf="comment.hidden; else else_content">
+      <s>{{comment.content}}</s>
+    </span>
+    <ng-template #else_content>{{comment.content}}</ng-template>
+    <span [hidden]="!hasRoleC(comment, 'Instructor')" class="badge badge-info">教員</span>
+    <span class="badge badge-default">{{comment.name}}</span>
+  </li>
+</ul>
+</div>
+
+</div>

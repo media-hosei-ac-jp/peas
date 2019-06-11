@@ -1,0 +1,23 @@
+<h3>代理ログイン</h3>
+
+<!--
+<input type="text" [(ngModel)]="uid" />
+<button [disabled]="!uid" (click)="login()">ログイン</button>
+<br />
+<div *ngIf="successful" class="alert alert-success">
+  ログインしました
+</div>
+-->
+
+<table *ngIf="users$ | async as users">
+  <tbody>
+    <tr *ngFor="let user of users">
+      {{user.id}} {{user.familyName}} {{user.givenName}}
+      <button (click)="login(uid)">ログイン</button>
+      <br />
+      <span *ngIf="successful" class="alert alert-success">
+        ログインしました
+      </span>
+    </tr>
+  </tbody>
+</table>

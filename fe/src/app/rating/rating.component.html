@@ -1,0 +1,11 @@
+<span>
+  <span style="font-size: 30px;" *ngFor="let item of items">
+    <span *ngIf="item<=model; else elseBlock" (click)="model=item;">
+      <i (click)="rate(item)" style="color: #FDE16D" class="fa fa-star" aria-hidden="true"></i>
+    </span>
+    <ng-template #elseBlock>
+      <i (click)="rate(item)" style="color: lightgray"class="fa fa-star-o" aria-hidden="true"></i>
+    </ng-template>
+  </span>
+
+</span>

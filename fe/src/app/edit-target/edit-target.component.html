@@ -1,0 +1,66 @@
+<div *ngIf="quiz && targets">
+<h3>参加者編集 - {{quiz.title}}</h3>
+<div class="float-right">
+  <a routerLink="/admin-top" class="btn btn-success">戻る</a>
+</div>
+<div>
+  評価対象者をチェックしてください。<br />
+  ここで選択されている対象者のみ評価対象者のリストに表示されます。
+</div>
+<div class="float-right">
+  <button (click)="checkAll(true)" class="btn btn-info">全て選択する</button>
+  <button (click)="checkAll(false)" class="btn btn-danger">全て解除する</button>
+  <a routerLink="/create-group/{{quiz.id}}" class="btn btn-secondary">グループを新規作成する</a>
+</div>
+<div class="clear">
+</div>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+    <th>
+    </th>
+    <th>
+      名前
+    </th>
+    <th>
+      種別
+    </th>
+    <th>
+      メンバー
+    </th>
+    <th>
+
+    </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let t of targets" [ngClass]="{'table-info': t.active}">
+    <td>
+      <input (change)="sort()" [(ngModel)]="t.active" type="checkbox" />
+    </td>
+    <td>
+      {{t.displayName}}
+    </td>
+    <td>
+      <span *ngIf="!t.groupName; else elseBlock">
+        {{t.users[0].roles[0]}}
+      </span>
+      <ng-template #elseBlock>グループ</ng-template>
+    </td>
+    <td>
+      <span *ngIf="!t.groupName; else elseBlock2">
+        -
+      </span>
+      <ng-template #elseBlock2>
+        <span *ngFor="let u of t.users; let i = index">{{u.familyName}} {{u.givenName}}<span *ngIf="i<t.users.length-1">, </span>
+        </span>
+      </ng-template>
+    </td>
+    <td>
+      <a routerLink="/edit-group/{{t.id}}" *ngIf="t.groupName" class="btn btn-secondary">編集する</a>
+    </td>
+    </tr>
+  </tbody>
+</table>
+<button [disabled]="sending" class="btn btn-info" (click)="save()">更新する</button>
+</div>

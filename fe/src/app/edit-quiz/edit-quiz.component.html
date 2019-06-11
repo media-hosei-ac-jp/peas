@@ -1,0 +1,184 @@
+<h3>設問の編集</h3>
+<div>
+<span class="float-right">
+<input (change)="onFileChange($event)" multiple="false" type="file" />
+<button [disabled]="!fileData" (click)="loadFile()" class="btn btn-secondary">ファイルから読み込む</button>
+<button (click)="saveFile()" class="btn btn-secondary">ファイルに保存する</button>
+</span>
+<div class="clearfix"></div>
+<span [hidden]="!quiz.id" class="float-right">
+<br />
+<button class="btn btn-danger"  data-toggle="modal" data-target="#deleteModal">
+  <i class="fa fa-trash" aria-hidden="true"></i>
+この設問を削除する</button>
+</span>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">設問削除の確認</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        本当にこの問題を削除しますか？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">いいえ</button>
+        <button type="button" class="btn btn-danger" (click)="deleteQuiz()" data-dismiss="modal">削除する</button>
+      </div>
+    </div>
+  </div>
+</div>
+<br />
+<form #editForm="ngForm" name="editForm" class="form">
+  <div class="form-group">
+   <div [hidden]="preview">
+    <label>
+    タイトル
+    </label>
+    <input size="100%" name="title" type="text" class="form-control" #title="ngModel" [(ngModel)]="quiz.title" required>
+    <div [hidden]="title.valid || title.pristine" class="alert alert-danger">
+      必須項目です。
+    </div>
+    <br />
+    <label>設問の説明（任意）<br />
+      <small>評価ページの上部に表示されます。</small>
+    </label>
+    <textarea name="description"  [(ngModel)]="quiz.description" placeholder="" class="form-control" [rows]="getRows(quiz.description,1)"></textarea>
+
+    <br />
+
+    <span *ngFor="let item of quiz.items; let i = index">
+    <label>
+    Q{{i+1}}
+    </label>
+
+    <button [hidden]="i==0" class="btn btn-secondary btn-sm" (click)="swapItems(i-1, i)">
+      <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+      <!-- 一つ上に移動する -->
+    </button>
+    <button [hidden]="i==quiz.items.length-1" class="btn btn-secondary btn-sm" (click)="swapItems(i, i+1)">
+      <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+      <!-- 一つ下に移動する -->
+    </button>
+    <span class="float-right">
+    <button class="btn btn-danger" (click)="quiz.items.splice(i, 1)">
+      <i class="fa fa-trash" aria-hidden="true"></i>
+      <!-- この項目を削除する -->
+    </button>
+    </span>
+
+    <div class="form-group">
+    <label>
+      問題文
+    </label>
+    <input size="100%" name="quiz-item-{{i}}-text" type="text"
+    [(ngModel)]="item.text" class="form-control" required>
+    </div>
+
+    <div class="form-inline">
+    <label>
+      問題の種類:
+    </label>
+    <!--
+    <input size="1" name="quiz-item-{{i}}-n" type="number"
+    [(ngModel)]="item.type" class="form-control" required>
+  -->
+    <select class="form-control" name="quiz-item-{{i}}-type" [(ngModel)]="item.typeStr">
+      <option value="Score">
+        得点
+      </option>
+      <option value="Free">自由記述</option>
+    </select>
+    &nbsp;
+    <span *ngIf="item.typeStr=='Score'" class="form-inline">
+    <label>
+      範囲: 1〜
+    </label>
+    <input style="width: 60px" name="quiz-item-{{i}}-maxScore" type="number"
+    [(ngModel)]="item.maxScore" class="form-control" min="2" required>
+  </span>
+    </div>
+  </span>
+    <br />
+    <div class="form-group">
+      <button class="btn btn-success" (click)="addQuizItem()">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+項目を追加する</button>
+    </div>
+
+    <div class="form-check">
+      <label class="form-check-label">
+        <input [(ngModel)]="quiz.resultPublished" name="resultPublished" type="checkbox" class="form-check-input">
+        結果を即時公開する（評価の投稿後すぐに結果が表示されます）
+      </label>
+    </div>
+    <div class="form-check">
+    <label class="form-check-label">
+      <input [(ngModel)]="quiz.anonymous" name="anonymous" type="checkbox" class="form-check-input">
+        コメントの名前を匿名にする
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="form-check-label">
+        <input [(ngModel)]="quiz.autoAddMember" name="autoAddMember" type="checkbox" class="form-check-input">
+        評価対象者を自動追加する（学生が自動的に対象者に追加されます。グループ課題の場合はオフにしてください。）
+      </label>
+    </div>
+
+  </div>
+
+  <!-- preview -->
+  <div [hidden]="!preview">
+    <h4>{{quiz.title}}  発表者: 法政 太郎</h4>
+    <br />
+    <div *ngIf="quiz.description && quiz.description!=''" style="white-space: pre-wrap">{{quiz.description}}</div>
+    <br />
+    <span *ngFor="let item of quiz.items; let i = index">
+      <div class="form-group">
+        <label>
+        Q{{i+1}}. {{item.text}}
+        </label>
+        <div [hidden]="item.typeStr!='Score'" >
+          <!--
+          <i (click)="test" class="fa fa-minus-circle text-danger" style="cursor: pointer" aria-hidden="true" (click)="scores[i]=scores[i]-1;">
+          </i>
+        -->
+        <!--
+          <rating name="scores-{{i}}" [(ngModel)]="scores[i]" [max]="item.maxScore"></rating>
+        -->
+        <my-rating name="scores-{{i}}" [max]="item.maxScore" [(ngModel)]="scores[i]" ></my-rating>
+          <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+          <span *ngIf="scores[i]==0; else rateElseBlock">未選択</span>
+          <ng-template #rateElseBlock>{{scores[i]}}</ng-template>
+        </div>
+        <input [hidden]="item.typeStr!='Free'" class="form-control" size="100%">
+      </div>
+    </span>
+  </div>
+
+
+    <hr />
+    <button [disabled]="!editForm.valid || sending" class="btn btn-info" (click)="saveQuiz()">
+      <i class="fa fa-floppy-o" aria-hidden="true"></i>
+保存する</button>
+
+    <i [hidden]="!sending" class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+    <span [hidden]="!saved" class="alert alert-info">保存しました。
+      <a routerLink="/admin-top" class="alert-link">一覧に戻る</a>
+    </span>
+    <span [hidden]="!error" class="alert alert-danger">保存に失敗しました。</span>
+
+    <button [hidden]="preview" [disabled]="!editForm.valid" class="btn btn-secondary" (click)="preview=true;">
+    <i class="fa fa-camera" aria-hidden="true"></i>
+    プレビュー</button>
+    <button [hidden]="!preview" [disabled]="!editForm.valid" class="btn btn-secondary" (click)="preview=false;">
+    <i class="fa fa-pencil" aria-hidden="true"></i>
+    編集画面に戻る</button>
+
+  </div>
+</form>

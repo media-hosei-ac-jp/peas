@@ -1,0 +1,55 @@
+<div class="header">
+  <div class="container">
+      <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+  <span class="navbar-toggler-icon"></span>
+</button>
+        <a class="navbar-brand" routerLink="top" routerLinkActive="active">
+          <!--
+  <img src="/assets/image/logo.png" width="30" height="30" alt="">
+-->
+<i class="fa fa-hand-peace-o" aria-hidden="true"></i>
+  peas</a>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+
+        <ul *ngIf="user" class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link"  routerLink="review-top" routerLinkActive="active">評価する</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"  routerLink="review-list-top" routerLinkActive="active">一覧から評価する<span class="badge badge-danger badge-pill">new</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="result-top" routerLinkActive="active">結果を見る</a>
+          </li>
+        <!--
+        <ul class="nav navbar-nav">
+          <li routerLinkActive="active">
+            <a routerLink="result-top-ta">結果を見る(TA用)</a>
+          </li>
+        </ul>
+      -->
+          <li [hidden]="!hasRole(user, 'Instructor')" class="nav-item" routerLinkActive="active">
+            <a class="nav-link" routerLink="admin-top">管理者メニュー</a>
+          </li>
+
+        </ul>
+        <span *ngIf="user" class="navbar-text">
+        {{user.familyName}} {{user.givenName}}
+        </span>
+      </div>
+      </nav>
+  </div>
+</div>
+<br />
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+
+<br />
+<div class="footer">
+  <div class="container">
+    <p>法政大学 情報メディア教育研究センター</p>
+  </div>
+</div>

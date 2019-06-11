@@ -1,0 +1,47 @@
+<div *ngIf="target && users">
+<h3>グループ編集</h3>
+<div class="float-right">
+  <button (click)="location.back()" class="btn btn-success">戻る</button>
+</div>
+<div class="clearfix"></div>
+<div>
+  <label>グループ名（必須）</label>
+  <input type="text" [(ngModel)]="target.groupName" required/>
+</div>
+<div>
+  グループのメンバーをチェックしてください。<br />
+</div>
+<div class="float-right">
+  <button (click)="checkAll(false)" class="btn btn-danger">全て解除する</button>
+</div>
+<div class="clear">
+</div>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+    <th>
+    </th>
+    <th>
+      名前
+    </th>
+    <th>
+      メールアドレス
+    </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of users" [ngClass]="{'table-info': u.checked}">
+    <td>
+      <input [(ngModel)]="u.checked" type="checkbox" />
+    </td>
+    <td>
+      {{u.familyName}} {{u.givenName}}
+    </td>
+    <td>
+      {{u.mail}}
+    </td>
+    </tr>
+  </tbody>
+</table>
+<button [disabled]="sending || !target.groupName" class="btn btn-info" (click)="save()">保存する</button>
+</div>

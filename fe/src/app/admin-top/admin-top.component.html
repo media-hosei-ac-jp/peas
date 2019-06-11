@@ -1,0 +1,75 @@
+<div class="float-right">
+  <button routerLink="/edit-quiz" class="btn btn-success">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+設問を追加する</button>
+</div>
+<div [hidden]="quizzes">
+  <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+  読み込み中です。。。
+</div>
+<div *ngIf="quizzes">
+<h3>設問一覧</h3>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>
+        タイトル
+      </th>
+      <th>
+        進行状況
+      </th>
+      <th>
+        作成日時
+      </th>
+      <th>
+
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let quiz of quizzes">
+      <td>
+        <a routerLink="/quiz/{{quiz.id}}">{{quiz.title}}</a>
+      </td>
+      <td>
+        <div *ngIf="progressData && progressData[quiz.id]" class="progress">
+          <div [hidden]="progressData[quiz.id].started==0" class="progress-bar bg-info progress-bar-striped active"
+           [style.width]="(progressData[quiz.id].started*100.0/progressData[quiz.id].count)+'%'" style="height: 30px">
+            <span style="position: relative; top: 7px;">{{progressData[quiz.id].started}}</span>
+          </div>
+          <div class="progress-bar bg-danger progress-bar-striped active"
+           [style.width]="(progressData[quiz.id].notStarted*100.0/progressData[quiz.id].count)+'%'" style="height: 30px">
+            <span [hidden]="progressData[quiz.id].notStarted==0" style="position: relative; top: 7px;">{{progressData[quiz.id].notStarted}}</span>
+          </div>
+        </div>
+        <!--
+        <div *ngIf="stats" class="progress">
+          <div class="progress-bar progress-bar-info progress-bar-striped active"
+           [style.width]="(stats.passedLearnerCount*100.0/stats.learnerCount)+'%'">
+            <span>{{stats.passedLearnerCount}} (完了)</span>
+          </div>
+
+          <div class="progress-bar progress-bar-warning progress-bar-striped active" [style.width]="(stats.failedLearnerCount*100/stats.learnerCount)+'%'">
+            <span>{{stats.failedLearnerCount}} (未完了)</span>
+          </div>
+          <div class="progress-bar progress-bar-danger progress-bar-striped active" [style.width]="((stats.learnerCount-stats.submittedLearnerCount)*100/stats.learnerCount)+'%'">
+            <span>{{stats.learnerCount-stats.submittedLearnerCount}} (未提出)</span>
+          </div>
+        </div>
+        -->
+      </td>
+      <td>
+        {{quiz.created | date:'y/M/d hh:mm:ss' }}
+      </td>
+      <td>
+        <a routerLink="/edit-quiz/{{quiz.id}}" class="btn btn-secondary">
+          <i class="fa fa-pencil" aria-hidden="true"></i>設問を編集する</a>
+        <a routerLink="/edit-target/{{quiz.id}}" class="btn btn-secondary">
+          <i class="fa fa-users" aria-hidden="true"></i>参加者を修正する</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+</div>

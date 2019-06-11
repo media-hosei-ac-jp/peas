@@ -1,0 +1,90 @@
+<div [hidden]="quiz && progressData">
+  <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+  読み込み中です。。。
+</div>
+<div *ngIf="quiz && progressData">
+<h3>{{quiz.title}} <span class="badge badge-default">結果:{{quiz.resultPublished?'公開中':'非公開'}}</span>
+<span class="badge badge-default">ゲスト投稿:{{quiz.guestReview?'有効':'無効'}}</span></h3>
+<div class="float-right">
+  <button (click)="downloadCSV()" class="btn btn-secondary">結果をダウンロードする</button>
+  <button [hidden]="quiz.resultPublished" [disabled]="loading" (click)="setResultPublished(true)" class="btn btn-info">結果を公開する</button>
+  <button [hidden]="!quiz.resultPublished" [disabled]="loading"  (click)="setResultPublished(false)" class="btn btn-danger">結果を非公開にする</button>
+
+  <button [hidden]="quiz.guestReview" [disabled]="loading" (click)="setGuestReview(true)" class="btn btn-info">ゲスト投稿を有効にする</button>
+  <button [hidden]="!quiz.guestReview" [disabled]="loading"  (click)="setGuestReview(false)" class="btn btn-danger">ゲスト投稿を無効にする</button>
+  <br />
+</div>
+
+<div>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th *ngIf="debug">
+        uid
+      </th>
+      <th *ngIf="debug">
+        targetId
+      </th>
+      <th>
+        名前
+      </th>
+      <th>
+        メールアドレス
+      </th>
+      <th>
+        状態
+      </th>
+      <th>
+        提出状況
+      </th>
+      <th>
+
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let target of targets" [ngClass]="{'table-info': target.targeted}">
+      <td *ngIf="debug">
+        {{target.users[0].id}}
+      </td>
+      <td *ngIf="debug">
+        {{target.id}}
+      </td>
+      <td>
+        <a routerLink="/result/{{target.id}}">{{target.displayName}}</a>
+      </td>
+      <td>
+        <span *ngIf="!target.groupName; else elseBlock">{{target.users[0].mail}}</span>
+        <ng-template #elseBlock>グループ</ng-template>
+      </td>
+      <td>
+        <i *ngIf="target.resultPublished" class="fa fa-paper-plane" aria-hidden="true"></i>
+      </td>
+      <td>
+
+        <div *ngIf="progressData && progressData[target.id]" class="progress">
+          <div [hidden]="progressData[target.id].submitted==0" class="progress-bar bg-info progress-bar-striped active"
+           [style.width]="(progressData[target.id].submitted*100.0/progressData[target.id].count)+'%'" style="height: 30px">
+            <span style="position: relative; top: 7px;">{{progressData[target.id].submitted}}</span>
+          </div>
+          <div class="progress-bar bg-danger progress-bar-striped active"
+           [style.width]="(progressData[target.id].notSubmitted*100.0/progressData[target.id].count)+'%'" style="height: 30px">
+            <span [hidden]="progressData[target.id].notSubmitted==0" style="position: relative; top: 7px;">{{progressData[target.id].notSubmitted}}</span>
+          </div>
+        </div>
+
+      </td>
+      <td>
+        <button [hidden]="target.targeted" [disabled]="loading" (click)="setTargetSelected(target, true)" class="btn btn-info">評価を開始する</button>
+        <button [hidden]="!target.targeted" [disabled]="loading" (click)="setTargetSelected(target, false)" class="btn btn-danger">評価を終了する</button>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div *ngIf="debug" class="float-right">
+  <input type="file" (change)="fileOnChange($event, 'csvData')"/>
+  <button [disabled]="sending" class="btn btn-info pink" (click)="addReviews()"><span class="glyphicon glyphicon-upload"></span>&nbsp;CSV形式でアップロード</button>
+</div>
+</div>
